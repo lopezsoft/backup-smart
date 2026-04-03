@@ -1,0 +1,91 @@
+/* Importación de fuente monospace para la consola (debe ir primero) */
+
+
+/* Directivas de TailwindCSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Estilos globales de backup-smart - Tema dark para SysAdmins */
+
+/* Clase base del tema dark */
+html {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-terminal-bg text-terminal-text font-mono antialiased;
+  margin: 0;
+  padding: 0;
+}
+
+/* Scrollbar personalizado estilo terminal */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-terminal-bg;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-terminal-border rounded;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-terminal-muted;
+}
+
+/* Clases de utilidad reutilizables */
+@layer components {
+  /* Tarjeta de contenido principal */
+  .card {
+    @apply bg-terminal-surface border border-terminal-border rounded-lg p-4;
+  }
+
+  /* Botón primario */
+  .btn-primary {
+    @apply bg-terminal-blue hover:bg-blue-400 text-white font-semibold py-2 px-4 rounded 
+           transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Botón de peligro/eliminación */
+  .btn-danger {
+    @apply bg-terminal-red hover:bg-red-400 text-white font-semibold py-2 px-4 rounded 
+           transition-colors duration-200;
+  }
+
+  /* Botón secundario */
+  .btn-secondary {
+    @apply bg-terminal-border hover:bg-terminal-muted text-terminal-text font-semibold py-2 px-4 rounded 
+           transition-colors duration-200;
+  }
+
+  /* Campo de formulario */
+  .form-input {
+    @apply bg-terminal-bg border border-terminal-border text-terminal-text rounded px-3 py-2 w-full
+           focus:outline-none focus:border-terminal-blue focus:ring-1 focus:ring-terminal-blue
+           placeholder-terminal-muted;
+  }
+
+  /* Etiqueta de formulario */
+  .form-label {
+    @apply block text-terminal-muted text-sm mb-1;
+  }
+
+  /* Badges de estado */
+  .badge-success {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium 
+           bg-green-900/30 text-terminal-green border border-green-800;
+  }
+  .badge-error {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium 
+           bg-red-900/30 text-terminal-red border border-red-800;
+  }
+  .badge-warning {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium 
+           bg-yellow-900/30 text-terminal-yellow border border-yellow-800;
+  }
+  .badge-info {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium 
+           bg-blue-900/30 text-terminal-blue border border-blue-800;
+  }
+}

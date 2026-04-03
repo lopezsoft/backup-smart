@@ -1,0 +1,52 @@
+# ─── Binarios y ejecutables ───────────────────────────────────────────────────
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+backup-smart
+backup-smart.db
+backup-smart.db-shm
+backup-smart.db-wal
+backups/
+
+# ─── Go ───────────────────────────────────────────────────────────────────────
+# Binarios compilados
+/build/
+
+# Cache de herramientas Go
+*.test
+*.out
+
+# ─── Node.js / Angular ────────────────────────────────────────────────────────
+# Dependencias de Node
+frontend/node_modules/
+
+# Builds de Angular
+frontend/dist/
+
+# Cache de herramientas Angular
+frontend/.angular/
+
+# ─── Wails ────────────────────────────────────────────────────────────────────
+# Build output de Wails
+/bin/
+
+# NOTA: frontend/src/wailsjs/ contiene stubs manuales que SÍ se versionan.
+# Wails los reemplaza automáticamente al compilar, pero los stubs permiten
+# el desarrollo del frontend sin depender del proceso Go en ejecución.
+
+# ─── IDEs y editores ──────────────────────────────────────────────────────────
+.idea/
+*.swp
+*.swo
+.vscode/
+
+# ─── Sistema operativo ────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Logs y datos temporales ──────────────────────────────────────────────────
+*.log
+tmp/
+temp/
