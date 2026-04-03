@@ -3,9 +3,7 @@
 package sqlite
 
 import (
-	"crypto/sha256"
 	"database/sql"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -13,6 +11,7 @@ import (
 	"backup-smart/backend/domain/entities"
 
 	_ "github.com/mattn/go-sqlite3" // Driver SQLite3
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Repository implementa las operaciones CRUD para todas las entidades en SQLite.
@@ -112,18 +111,23 @@ func (r *Repository) Migrate() error {
 
 // ─── MasterPassword ───────────────────────────────────────────────────────────
 
-// SetMasterPassword guarda el hash SHA-256 de la contraseña maestra en la configuración.
+// SetMasterPassword guarda el hash bcrypt de la contraseña maestra en la configuración.
+// Utiliza bcrypt con factor de coste 12 para protección contra ataques de fuerza bruta.
 func (r *Repository) SetMasterPassword(password string) error {
-	hash := hashPassword(password)
-	_, err := r.db.Exec(
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return fmt.Errorf("error al generar hash de contraseña: %w", err)
+	}
+	_, err = r.db.Exec(
 		`INSERT INTO app_config (key, value, updated_at) VALUES ('master_password_hash', ?, ?)
 		 ON CONFLICT(key) DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at`,
-		hash, time.Now(),
+		string(hash), time.Now(),
 	)
 	return err
 }
 
 // ValidateMasterPassword verifica si la contraseña proporcionada coincide con el hash almacenado.
+// Utiliza bcrypt.CompareHashAndPassword para comparación segura en tiempo constante.
 func (r *Repository) ValidateMasterPassword(password string) (bool, error) {
 	var storedHash string
 	err := r.db.QueryRow(`SELECT value FROM app_config WHERE key='master_password_hash'`).Scan(&storedHash)
@@ -134,13 +138,14 @@ func (r *Repository) ValidateMasterPassword(password string) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("error al consultar contraseña maestra: %w", err)
 	}
-	return hashPassword(password) == storedHash, nil
-}
-
-// hashPassword calcula el hash SHA-256 de una contraseña.
-func hashPassword(password string) string {
-	sum := sha256.Sum256([]byte(password))
-	return hex.EncodeToString(sum[:])
+	err = bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(password))
+	if err == bcrypt.ErrMismatchedHashAndPassword {
+		return false, nil
+	}
+	if err != nil {
+		return false, fmt.Errorf("error al verificar contraseña: %w", err)
+	}
+	return true, nil
 }
 
 // ─── DatabaseConfig CRUD ──────────────────────────────────────────────────────
